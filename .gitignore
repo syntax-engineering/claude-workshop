@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+todos.json
+
+# Facilitator-only planning doc — never ship this to attendees' clones.
+# It contains the reference "answer key" for the workshop feature; keep it
+# out of anything attendees' Claude sessions can read.
+/FACILITATOR-RUN-OF-SHOW.md
+
+# Local Claude Code session state, not part of the shared repo
+.claude/settings.local.json
+.claude/.cc-writes/
