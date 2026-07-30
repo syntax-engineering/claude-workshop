@@ -3,49 +3,95 @@
 You'll need about 15 minutes to do this before the session. Please do it
 ahead of time — we won't have time to debug local setup issues live.
 
-## 1. Confirm Claude Code access
+Pick **one** of the three setups below — whichever fits how you like to
+work. All three end up in the same place: the `todo-cli` starter repo open
+and ready to go. If you get stuck on any of them, ask in
+`#claude-discussion` before the session.
 
-You should already have a Claude Code seat on our Team plan. Confirm you can
-run:
+## Option A: Claude Code on the web (recommended if you don't code day-to-day)
 
-```bash
-claude --version
-```
+No install required — this runs entirely in your browser.
 
-If that fails, see [Claude Code's install docs](https://docs.claude.com/en/docs/claude-code)
-or ask in `#<workshop-channel>` before the session.
+1. Go to [claude.ai/code](https://claude.ai/code) and sign in with your Team
+   account.
+2. Connect your GitHub account if you haven't already.
+3. Open the starter repo (`https://github.com/syntax-engineering/claude-workshop`) from there.
+4. Once it's open, just ask Claude in the chat: "Set up this project and run
+   the tests." It'll create the virtual environment, install dependencies,
+   and run `pytest` for you.
+5. Confirm it works by asking Claude to run `todo add "Buy milk"` and
+   `todo list` — you're ready if it prints back "Buy milk".
 
-## 2. Clone the starter repo
+## Option B: Claude Code for Desktop
 
-```bash
-git clone <starter-repo-url> todo-cli
-cd todo-cli
-```
+A native app for Mac or Windows — still no terminal commands to type
+yourself.
 
-## 3. Set up and verify the app runs
+1. Download the [desktop app](https://claude.ai/download) and sign in with
+   your Team account.
+2. Choose "Clone Repository" and point it at the starter repo URL
+   (`https://github.com/syntax-engineering/claude-workshop`).
+3. Once it's open, ask Claude in the chat: "Set up this project and run the
+   tests." It'll create the virtual environment, install dependencies, and
+   run `pytest` for you.
+4. Confirm it works by asking Claude to run `todo add "Buy milk"` and
+   `todo list` — you're ready if it prints back "Buy milk".
 
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -e ".[dev]"
-pytest
-todo add "Buy milk"
-todo list
-```
+## Option C: Claude Code CLI (if you're comfortable in a terminal)
 
-You're ready if `pytest` passes and `todo list` prints back "Buy milk".
+1. Install Claude Code, if you don't already have it:
 
-## If local setup doesn't work
+   **macOS:**
 
-Two fallback options — pick whichever is easier for you, no need to debug
-further on your own machine:
+   ```bash
+   curl -fsSL https://claude.ai/install.sh | bash
+   ```
+
+   Or, if you use Homebrew:
+
+   ```bash
+   brew install --cask claude-code@latest
+   ```
+
+   **Windows (PowerShell):**
+
+   ```powershell
+   irm https://claude.ai/install.ps1 | iex
+   ```
+
+   Then confirm it's installed:
+
+   ```bash
+   claude --version
+   ```
+
+   If that fails, see [Claude Code's install docs](https://docs.claude.com/en/docs/claude-code).
+
+2. Clone the starter repo:
+
+   ```bash
+   git clone https://github.com/syntax-engineering/claude-workshop todo-cli
+   cd todo-cli
+   ```
+
+3. Set up and verify the app runs:
+
+   ```bash
+   python3 -m venv .venv
+   source .venv/bin/activate
+   pip install -e ".[dev]"
+   pytest
+   todo add "Buy milk"
+   todo list
+   ```
+
+   You're ready if `pytest` passes and `todo list` prints back "Buy milk".
+
+## If none of these work
 
 - **GitHub Codespaces** — open the repo on GitHub and use "Code → Create
   codespace on main". The devcontainer installs everything (Python, deps,
   Claude Code) automatically.
-- **Claude Code on the web** — go to [claude.ai/code](https://claude.ai/code),
-  connect your GitHub account if you haven't already, and open the starter
-  repo from there. No local install needed at all.
 
 ## Optional, for engineers
 
