@@ -1,16 +1,13 @@
 import argparse
-from datetime import date
 
 from todo_cli.models import Task
 from todo_cli.storage import DEFAULT_STORE_PATH, load_tasks, next_id, save_tasks
 from pathlib import Path
 
 
-def add_task(
-    description: str, path: Path = DEFAULT_STORE_PATH, *, due_date: date | None = None
-) -> Task:
+def add_task(description: str, path: Path = DEFAULT_STORE_PATH) -> Task:
     tasks = load_tasks(path)
-    task = Task(id=next_id(tasks), description=description, due_date=due_date)
+    task = Task(id=next_id(tasks), description=description)
     tasks.append(task)
     save_tasks(tasks, path)
     return task
@@ -35,40 +32,9 @@ def delete_task(task_id: int, path: Path = DEFAULT_STORE_PATH) -> bool:
     return True
 
 
-def set_due_date(
-    task_id: int, due_date: date | None, path: Path = DEFAULT_STORE_PATH
-) -> Task | None:
-    tasks = load_tasks(path)
-    for task in tasks:
-        if task.id == task_id:
-            task.due_date = due_date
-            save_tasks(tasks, path)
-            return task
-    return None
-
-
-def sorted_by_due_date(tasks: list[Task]) -> list[Task]:
-    return sorted(tasks, key=lambda task: (task.due_date is None, task.due_date or date.max, task.id))
-
-
-def format_task(task: Task, *, today: date | None = None) -> str:
+def format_task(task: Task) -> str:
     marker = "x" if task.done else " "
-    line = f"[{marker}] {task.id}: {task.description}"
-    if task.due_date is not None:
-        line += f" (due {task.due_date.isoformat()}"
-        if not task.done and task.due_date < (today if today is not None else date.today()):
-            line += ", OVERDUE"
-        line += ")"
-    return line
-
-
-def parse_date(value: str) -> date:
-    try:
-        return date.fromisoformat(value)
-    except ValueError as exc:
-        raise argparse.ArgumentTypeError(
-            f"invalid date {value!r}, expected YYYY-MM-DD"
-        ) from exc
+    return f"[{marker}] {task.id}: {task.description}"
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -77,7 +43,6 @@ def build_parser() -> argparse.ArgumentParser:
 
     add_parser = subparsers.add_parser("add", help="Add a new task")
     add_parser.add_argument("description", help="Task description")
-    add_parser.add_argument("--due", type=parse_date, default=None, help="Due date (YYYY-MM-DD)")
 
     subparsers.add_parser("list", help="List all tasks")
 
@@ -87,12 +52,6 @@ def build_parser() -> argparse.ArgumentParser:
     delete_parser = subparsers.add_parser("delete", help="Delete a task")
     delete_parser.add_argument("id", type=int, help="Task id")
 
-    due_parser = subparsers.add_parser("due", help="Set or clear a task's due date")
-    due_parser.add_argument("id", type=int, help="Task id")
-    due_group = due_parser.add_mutually_exclusive_group(required=True)
-    due_group.add_argument("date", type=parse_date, nargs="?", help="New due date (YYYY-MM-DD)")
-    due_group.add_argument("--clear", action="store_true", help="Remove the due date")
-
     return parser
 
 
@@ -101,10 +60,10 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     if args.command == "add":
-        task = add_task(args.description, due_date=args.due)
+        task = add_task(args.description)
         print(f"Added: {format_task(task)}")
     elif args.command == "list":
-        tasks = sorted_by_due_date(load_tasks())
+        tasks = load_tasks()
         if not tasks:
             print("No tasks yet.")
         for task in tasks:
@@ -121,16 +80,6 @@ def main(argv: list[str] | None = None) -> int:
             print(f"No task with id {args.id}")
             return 1
         print(f"Deleted task {args.id}")
-    elif args.command == "due":
-        due_date = None if args.clear else args.date
-        task = set_due_date(args.id, due_date)
-        if task is None:
-            print(f"No task with id {args.id}")
-            return 1
-        if args.clear:
-            print(f"Cleared due date for task {args.id}")
-        else:
-            print(f"Set due date for task {args.id} to {task.due_date.isoformat()}")
 
     return 0
 
