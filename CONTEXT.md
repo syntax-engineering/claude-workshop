@@ -5,5 +5,5 @@ A command-line todo list. Tasks are the core concept; this context defines the v
 ## Language
 
 **Due Date**:
-The calendar date by which a Task is expected to be done. Date-only, no time-of-day component.
+The calendar date by which a Task is expected to be done. Date-only, no time-of-day component. Optional — a Task has zero or one Due Date.
 _Avoid_: Deadline, due datetime
